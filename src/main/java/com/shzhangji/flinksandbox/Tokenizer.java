@@ -10,7 +10,7 @@ public class Tokenizer implements FlatMapFunction<String, Tuple2<String, Integer
   @Override
   public void flatMap(String value, Collector<Tuple2<String, Integer>> out) throws Exception {
     for (String word : value.split("\\s+")) {
-      out.collect(new Tuple2<>(word, 1));
+      out.collect(Tuple2.of(word, 1));
     }
   }
 }

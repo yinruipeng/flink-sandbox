@@ -2,24 +2,29 @@ package com.shzhangji.flinksandbox.kafka;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.apache.flink.core.io.SimpleVersionedSerializer;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.flink.streaming.connectors.fs.Clock;
-import org.apache.flink.streaming.connectors.fs.bucketing.Bucketer;
-import org.apache.hadoop.fs.Path;
+import org.apache.flink.streaming.api.functions.sink.filesystem.BucketAssigner;
+import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.SimpleVersionedStringSerializer;
 
-public class EventTimeBucketer implements Bucketer<String> {
+public class EventTimeBucketAssigner implements BucketAssigner<String, String> {
   private ObjectMapper mapper = new ObjectMapper();
 
   @Override
-  public Path getBucketPath(Clock clock, Path basePath, String element) {
+  public String getBucketId(String element, Context context) {
     String partitionValue;
     try {
       partitionValue = getPartitionValue(element);
     } catch (Exception e) {
       partitionValue = "00000000";
     }
-    return new Path(basePath, "dt=" + partitionValue);
+    return "dt=" + partitionValue;
+  }
+
+  @Override
+  public SimpleVersionedSerializer<String> getSerializer() {
+    return SimpleVersionedStringSerializer.INSTANCE;
   }
 
   private String getPartitionValue(String element) throws Exception {

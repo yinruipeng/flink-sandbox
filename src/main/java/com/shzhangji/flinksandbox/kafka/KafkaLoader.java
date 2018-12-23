@@ -18,7 +18,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 public class KafkaLoader {
   public static void main(String[] args) throws Exception {
     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-    env.setParallelism(2);
+    env.setParallelism(1);
 
     // checkpoint
     env.enableCheckpointing(10_000);
@@ -30,7 +30,7 @@ public class KafkaLoader {
     Properties props = new Properties();
     props.setProperty("bootstrap.servers", "localhost:9092");
     FlinkKafkaConsumer010<String> consumer = new FlinkKafkaConsumer010<>(
-        "zj_test", new SimpleStringSchema(), props);
+        "flink_test", new SimpleStringSchema(), props);
     DataStream<String> stream = env.addSource(consumer);
 
     // sink
